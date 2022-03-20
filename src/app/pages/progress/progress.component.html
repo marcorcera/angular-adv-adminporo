@@ -33,7 +33,8 @@
             <div class="card-body">
                 <!-- <app-incrementador (valorSalida)="cambioValorHijo($event)" [value]="15"></app-incrementador> -->
                 <app-incrementador (valorSalida)="progreso1 = $event" 
-                                    [value]="progreso1">
+                                    [inputValue]="progreso1" 
+                                    inputColor="btn-primary">
                 </app-incrementador>
             </div>
         </div>
@@ -43,7 +44,8 @@
         <div class="card">
             <div class="card-body">
                 <app-incrementador (valorSalida)="progreso2 = $event" 
-                                    [value]="progreso2">
+                                    [inputValue]="progreso2"
+                                    [inputColor]="'btn-info'">
                 </app-incrementador>
             </div>
         </div>
