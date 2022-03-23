@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable, interval } from 'rxjs';
-import { retry } from 'rxjs/operators';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Observable, interval, Subscription } from 'rxjs';
+import { retry, take, map, filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-rxjs',
@@ -8,7 +8,9 @@ import { retry } from 'rxjs/operators';
   styles: [
   ]
 })
-export class RxjsComponent implements OnInit {
+export class RxjsComponent implements OnInit, OnDestroy {
+
+  intervalSubs!:Subscription;
 
   constructor() { 
 
@@ -52,18 +54,52 @@ export class RxjsComponent implements OnInit {
     // );
     
     //EJEMPLO 2
-    this.retornaObservable().pipe(
-      retry()
-    ).subscribe(
-      valor => console.log('Subs:', valor),
-      error => console.log('Error:', error),
-      () => console.info('Obs terminado')
-    );
+    // this.retornaObservable().pipe(
+    //   retry()
+    // ).subscribe(
+    //   valor => console.log('Subs:', valor),
+    //   error => console.log('Error:', error),
+    //   () => console.info('Obs terminado')
+    // );
+    
+    //EJEMPLO 3
+    this.intervalSubs = this.retornaIntervalo().subscribe( console.log )
+      
+      //también podemos mandar el argumento que retorna el subscribe directamente a otra funcion de esta manera:
+      //.subscribe( console.log );
+      //.subscribe(
+      //   (valor) => console.log(valor)
+      // );
+      
+  }
+  ngOnDestroy(): void {
+    this.intervalSubs.unsubscribe();
   }
 
-  retornaIntervalo()
+  //EJEMPLO 3
+  retornaIntervalo():Observable<number>
   {
-    const interval$:Observable<number> = interval(1000)
+    //si queremos parar el interval para que no sea infinito utilizamos el take
+    //el take le dice al observable cuantas emisiones del obs necesita
+    //el map sirve para transformar o limpiar la informacion que recibe el observable y mutarla como queramos
+    //por ejemplo la info de una API
+    //el filter solo deja pasar el valor true del condicional
+
+    //podemos hacer el retunr directamente:
+    //return = interval()...
+    const intervalo$ = interval(1000)
+                        .pipe(
+                            map( valor => {
+                              return valor +1;
+                            }),
+                            filter( valor => (valor % 2 === 0) ? true : false ),
+                            take(10),
+                            
+                            //podemos hacer el return de map así
+                            //map( valor => 'Hola mundo: ' + (valor +1))
+                        );
+
+    return intervalo$;
   }
 
   retornaObservable():Observable<number>
